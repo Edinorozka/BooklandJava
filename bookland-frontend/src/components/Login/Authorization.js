@@ -45,6 +45,13 @@ export const Authorization = () => {
         }
     }
 
+    useEffect(() => {
+        if (token) {
+            GetUser(dispatch, token, login);
+            navigator('/');
+        }
+    }, [token, dispatch, login, navigator]);
+    
     const LoginChange = (e) => {
         setLogin(e.target.value)
         setLoginText("Логин")
