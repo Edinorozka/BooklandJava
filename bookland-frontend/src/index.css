@@ -1,0 +1,67 @@
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #F5F5F5;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.navbarMainStyle {
+    font-size: 20px;
+    display: flex;
+    padding-left: 2%;
+    padding-right: 2%;
+    height: 60px;
+    
+}
+
+.navbarAvatarStyle {
+    float: right;
+    top: 5px;
+}
+
+.mainPartStyle {
+    padding-top: 1px;
+}
+
+.center{
+    text-align: center;
+}
+
+.titleTextStyle {
+    text-align: center;
+    font-size: 6em;
+    color: #7146bd;
+    margin-top: -80px;
+}
+
+.blockText {
+    border-radius: 15px;
+    background: white;
+    margin: 0 5% 0 5%;
+    padding: 1px 20px 1px 20px;
+    margin-bottom: 25px;
+    display: flex;
+}
+
+.text {
+    font-size: 20px;
+}
+
+.nameStyle {
+    float: right;
+    margin-top: 18%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.blockAuthAndReg {
+    background-color: white;
+    padding-left: 1%;
+    padding-right: 1%;
+    border-radius: 15px
+}
