@@ -1,21 +1,27 @@
 package com.booklnad.bookland.DB.entity;
 
 import com.booklnad.bookland.enums.Role;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "Users")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(nullable = false, unique = true)
     private String login;
 
     @Column(nullable = false)
-    @JsonIgnore
     private String password;
 
     private String name;
@@ -23,53 +29,22 @@ public class User{
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
-    public User() {
-    }
 
-    public User(String login, String password) {
+    @Column(name = "icon")
+    private String icon;
+
+    public User(String login, String password, String name, Role role, String icon) {
         this.login = login;
         this.password = password;
-        name = login;
-        role = Role.USER;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
+        this.role = role;
+        this.icon = icon;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
+    public User(String login, String password, String name, Role role) {
+        this.login = login;
+        this.password = password;
+        this.name = name;
         this.role = role;
     }
 }

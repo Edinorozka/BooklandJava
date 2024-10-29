@@ -1,16 +1,15 @@
 import axios from "axios"
-import { authUrl, getUserUrl, refreshTokenUrl, createUrl } from "../components/Urls";
+import { authUrl, getUserUrl, refreshTokenUrl, createUrl, getIconUrl } from "../components/Urls";
 import { getToken, deleteToken } from "../store/reducers/TokenSlice"
 import { getUser, deleteUser } from "../store/reducers/UserSlice"
 
 export const Login = async (dispatch, config) => {
     try {
         await axios.post(authUrl, config).then(res => {
-            console.log(res.data.token)
             dispatch(getToken(res.data))
         });
     } catch (e) {
-        console.log(e)
+        return e.response.data
     }
 }
 
@@ -25,13 +24,23 @@ export async function GetUser(dispatch, token, login) {
     }
 }
 
-export async function RegUser(dispatch, user){
+export const RegUser = async (login, password, name, role, icon) => {
     try {
-        await axios.post(createUrl, user).then(res => {
-            console.log(res.data)
-        });
+        var bodyData = new FormData();
+        bodyData.append("login", login)
+        bodyData.append("password", password)
+        if (name !== "") bodyData.append("name", name)
+        if (role !== null) bodyData.append("role", role)
+        if (icon !== null) bodyData.append("icon", icon)
+
+        return await axios({
+            method: "post",
+            url: createUrl,
+            headers: { 'Content-Type': 'multipart/form-data' },
+            data: bodyData,
+        })
     } catch (e) {
-        console.log(e)
+        return e.response
     }
 }
 
@@ -39,6 +48,16 @@ export async function RefreshToken(dispatch, refreshToken){
     try {
         await axios.post(refreshTokenUrl, { refreshToken }).then(res => {
             dispatch(getToken(res.data))
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export async function GetIcon(dispatch, icon){
+    try {
+        await axios.get(getIconUrl + icon).then(res => {
+            return res.data
         })
     } catch (e) {
         console.log(e)

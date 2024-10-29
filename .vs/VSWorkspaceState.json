@@ -11,6 +11,6 @@
     "\\bookland-frontend\\src\\store",
     "\\bookland-frontend\\src\\store\\reducers"
   ],
-  "SelectedNode": "\\bookland-frontend\\src\\components\\Login\\Registration.js",
+  "SelectedNode": "\\bookland-frontend\\src\\api\\AuthApiMethods.js",
   "PreviewInSolutionExplorer": false
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Input, Space, ConfigProvider } from 'antd';
 import { GetUser, Login } from '../../api/AuthApiMethods';
 import { useDispatch, useSelector } from "react-redux";
@@ -19,19 +19,16 @@ export const Authorization = () => {
 
     const { token } = useSelector(state => state.Token);
 
-    const AddUserClick = async () => {
+    const AuthUserClick = async () => {
         setError('')
         if (login !== "" && password !== "") {
             const config = {
                 login: login,
                 password: password
             }
-            await Login(dispatch, config)
-            if (token !== '') {
-                GetUser(dispatch, token, login);
-                navigator('/')
-            } else {
-                setError("Неверный логи или пароль")
+            const e = await Login(dispatch, config)
+            if (!token) {
+                setError(e)
             }
         } else {
             if (login === "") {
@@ -65,8 +62,8 @@ export const Authorization = () => {
     }
 
     return (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "2%" }}>
-            <div className="blockAuthAndReg">
+        <div style={{ display: "flex", justifyContent: "center", marginTop: "2vh" }}>
+            <div className="mainBlockStyle">
                 <ConfigProvider
                     theme={{
                         token: {
@@ -81,9 +78,9 @@ export const Authorization = () => {
                         <Input.Password status={PasswordStatus} placeholder={PasswordText} value={password} onChange={(e) => PasswordChange(e)} />
                         <Space direction="horizontal" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                             <Button onClick={() => navigator('/registration')}>Регистрация</Button>
-                            <Button type="primary" onClick={() => AddUserClick()}>Вход</Button>
+                            <Button type="primary" onClick={() => AuthUserClick()}>Вход</Button>
                         </Space>
-                        <p style={{ color: "red" }}>{error}</p>
+                        <p style={{ color: "red", display: "flex", justifyContent: "center" }}>{error}</p>
                     </Space>
                 </ConfigProvider>
             </div>

@@ -5,7 +5,7 @@ const initialState = {
     login: null,
     name: '',
     role: '',
-    image: ''
+    icon: ''
 }
 
 const UserSlice = createSlice({
@@ -16,14 +16,14 @@ const UserSlice = createSlice({
             state.login = action.payload.login
             state.name = action.payload.name
             state.role = action.payload.role
-            state.image = action.payload.image
+            state.icon = action.payload.icon
             state.userLogged = true
         },
         deleteUser: (state) => {
             state.login = ''
             state.name = ''
             state.role = ''
-            state.image = ''
+            state.icon = ''
             state.userLogged = false
         }
     }
