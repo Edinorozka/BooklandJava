@@ -65,7 +65,7 @@ export const Navbar = (props) => {
 
     return (
         <>
-            <div style={{ background: '#FFFFFF' }}>
+            <div style={{ background: '#FFFFFF', position: "fixed", top: "0", zIndex: "1000", width: "100%"}}>
                     <nav className="navbarMainStyle" style={{ maxHeight: "50", border: "20px" }}>
                         <a href='/' style={{textDecoration: "none", color: "black"}}>
                             <h1 style={{ marginTop: 1 }}>Bookland</h1>
@@ -101,7 +101,7 @@ export const Navbar = (props) => {
 
                         
                     </nav>
-        </div>
+            </div>
         <div className="mainPartStyle">
             {props.children}
         </div>

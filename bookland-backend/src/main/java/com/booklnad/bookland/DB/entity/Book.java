@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -45,4 +46,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "series_id", nullable = false)
     private Series series;
+    @OneToMany(mappedBy = "bookId", fetch = FetchType.EAGER)
+    private List<BookImages> images;
 }

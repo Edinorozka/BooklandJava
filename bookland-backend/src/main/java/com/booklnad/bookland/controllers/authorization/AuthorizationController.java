@@ -13,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -29,6 +31,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthorizationController {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
+
+    @Value("${icons.path}")
+    private String iconPath;
 
     @Autowired
     private UserRepository userRepository;
@@ -76,8 +81,8 @@ public class AuthorizationController {
 
     @GetMapping(path = "/singIn/getImage/{icon}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     public byte[] getIcon(@PathVariable String icon){
-        InputStream is = getClass().getResourceAsStream("/data/icons/" + icon);
         try {
+            InputStream is = new FileInputStream(iconPath + icon);
             byte[] bytesIcon = is.readAllBytes();
             is.close();
             return bytesIcon;

@@ -1,4 +1,16 @@
+export const shopUrlMain = 'http://localhost:8080/shop/open/'
+export const shopSizeUrl = 'http://localhost:8080/shop/open/size'
+export const getBookUrl = 'http://localhost:8080/shop/open/book/'
 
+export const getAllparams = 'http://localhost:8080/shop/open/allParams'
+export const getTypes = 'http://localhost:8080/shop/open/types'
+export const getGenres = 'http://localhost:8080/shop/open/genres'
+export const getGenre = 'http://localhost:8080/shop/open/genre'
+export const getSeries = 'http://localhost:8080/shop/open/series'
+export const getOneSeries = 'http://localhost:8080/shop/open/oneSeries'
+export const getPublishers = 'http://localhost:8080/shop/open/publishers'
+export const getAuthors = 'http://localhost:8080/shop/open/authors'
+export const getAuthor = 'http://localhost:8080/shop/open/author'
 
 export const blogUrlMain = 'http://localhost:8080/blog/'
 export const blogUrlSize = 'http://localhost:8080/blog/size'

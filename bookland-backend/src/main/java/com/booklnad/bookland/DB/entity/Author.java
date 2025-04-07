@@ -20,9 +20,9 @@ public class Author {
     private Integer id;
     @Column(nullable = false)
     private String name;
-    @Column(name = "second_name", nullable = false)
+    @Column(name = "second_name")
     private String secondName;
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
     @JsonIgnore
     @ManyToMany(mappedBy = "authors")

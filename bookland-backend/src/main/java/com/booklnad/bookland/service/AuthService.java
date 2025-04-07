@@ -127,9 +127,9 @@ public class AuthService {
             String iconName = UUID.randomUUID().toString();
             String newIconName = iconName + icon.getOriginalFilename().substring(icon.getOriginalFilename().lastIndexOf('.'));
             try {
-                File iconDir = new File(getClass().getResource(iconPath).toURI());
+                File iconDir = new File(iconPath);
                 icon.transferTo(new File(iconDir + "/" + newIconName));
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             user = new User(login, password, name, role, newIconName);

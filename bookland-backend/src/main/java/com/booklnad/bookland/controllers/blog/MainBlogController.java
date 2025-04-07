@@ -13,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,6 +31,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/blog")
 public class MainBlogController {
+    @Value("${materials.path}")
+    private String materialsPath;
+
     @Autowired
     private ArticlesRepository articlesRepository;
 
@@ -59,7 +64,6 @@ public class MainBlogController {
                 articlesRepository.findByType(type, PageRequest.of(current, 20, sort))){
             allArticlesResponses.add(articlesService.responseOneArticle(a));
         }
-
         return ResponseEntity.ok(allArticlesResponses);
     }
 
@@ -67,7 +71,6 @@ public class MainBlogController {
     public ResponseEntity<ArticlesResponse> getOneArticles(@PathVariable int articleId){
         Optional<Articles> article = articlesRepository.findById(articleId);
         if (article.isPresent()){
-
             return ResponseEntity.ok(new ArticlesResponse(article.get()));
         } else {
             return ResponseEntity.notFound().build();
@@ -76,8 +79,8 @@ public class MainBlogController {
 
     @GetMapping(path = "/material/{material}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
     public byte[] getMaterial(@PathVariable String material){
-        InputStream is = getClass().getResourceAsStream("/data/materials/" + material);
         try {
+            InputStream is = new FileInputStream(materialsPath + material);
             byte[] bytesIcon = is.readAllBytes();
             is.close();
             return bytesIcon;

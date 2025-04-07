@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface MaterialsRepository extends JpaRepository<Materials, Integer> {
     Optional<Materials> findById(int id);
+    Optional<Materials> findByLocation(String location);
 }

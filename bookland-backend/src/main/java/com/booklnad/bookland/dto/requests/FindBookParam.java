@@ -7,8 +7,9 @@ public class FindBookParam {
     private int type;
     private int genre;
     private int publisher;
-    private int seires;
+    private int series;
     private String inName;
-    private String author;
+    private int author;
     private int prise;
+    private int page;
 }

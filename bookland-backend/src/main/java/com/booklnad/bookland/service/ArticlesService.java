@@ -124,35 +124,45 @@ public class ArticlesService{
             a.setTitle(article.getTitle());
             a.setDescription(article.getDescription());
             a.setType(article.getType());
-            for(Materials m : a.getMaterials()){
-                Path filePath = Paths.get(materialsPath, m.getLocation());
-                if (Files.exists(filePath)){
-                    Files.delete(filePath);
-                }
-                materialsRepository.delete(m);
-            }
 
             Document document = Jsoup.parse(article.getText());
             List<String> photosName = new ArrayList<>();
+            List<String> newPhotosName = new ArrayList<>();
             for (Element element : document.select("img")){
                 String base64File = element.attr("src");
-                String type = base64File.substring(base64File.indexOf("image/") + 6, base64File.indexOf(";base64"));
-                byte[] byteFile = Base64.getDecoder().decode(base64File.substring(base64File.indexOf(";base64,") + 8));
-                String name = UUID.randomUUID().toString();
+                if (!base64File.contains("http://")){
+                    String type = base64File.substring(base64File.indexOf("image/") + 6, base64File.indexOf(";base64"));
+                    byte[] byteFile = Base64.getDecoder().decode(base64File.substring(base64File.indexOf(";base64,") + 8));
+                    String name = UUID.randomUUID().toString();
 
-                File photo = new File(materialsPath + '/' + name + "." + type);
-                photosName.add(name + "." + type);
-                photo.createNewFile();
-                OutputStream stream = new FileOutputStream(photo);
-                stream.write(byteFile);
-                stream.close();
+                    File photo = new File(materialsPath + '/' + name + "." + type);
+                    photosName.add(name + "." + type);
+                    newPhotosName.add(name + "." + type);
+                    photo.createNewFile();
+                    OutputStream stream = new FileOutputStream(photo);
+                    stream.write(byteFile);
+                    stream.close();
 
-                element.attr("src", "http://localhost:8080/blog/material/" + name + "." + type);
+                    element.attr("src", "http://localhost:8080/blog/material/" + name + "." + type);
+                } else {
+                    String name = base64File.substring(base64File.indexOf("/material/") + 10);
+                    log.info(name);
+                    photosName.add(name);
+                }
+            }
+            for(Materials m : a.getMaterials()){
+                if (!photosName.contains(m.getLocation())){
+                    Path filePath = Paths.get(materialsPath, m.getLocation());
+                    if (Files.exists(filePath)){
+                        Files.delete(filePath);
+                    }
+                    materialsRepository.delete(m);
+                }
             }
             a.setText(document.html());
             articlesRepository.save(a);
 
-            for (String name : photosName){
+            for (String name : newPhotosName){
                 Materials material = new Materials("", name, a);
                 materialsRepository.save(material);
             }

@@ -9,6 +9,7 @@ import { Authorization } from './Login/Authorization';
 import { Registration } from './Login/Registration';
 import { CreateNewPost } from './Blog/CreateNewPost';
 import { Article } from './Blog/Article';
+import { Shop } from './Shop/Shop';
 
 function App() {
     return (
@@ -24,7 +25,7 @@ function App() {
                 >
                     <Navbar>
                         <Routes>
-                            <Route path={'/'} element={<p style={{ fontSize: "72px" }}>hello</p>} />
+                            <Route path={'/'} element={<Shop />} />
                             <Route path="/blog" element={<Blog />} />
                             <Route path="/blog/:article_id" element={<Article />} />
                             <Route path={'/createPost'} element={<CreateNewPost />} />

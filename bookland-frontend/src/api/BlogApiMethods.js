@@ -16,8 +16,7 @@ export const GetArticlesSize = async (typeArticles) => {
     } catch (e) {
         console.log(e)
         return 0
-    }
-    
+    } 
 }
 
 export const GetArticles = async (sortType, typeArticles, current) => {
