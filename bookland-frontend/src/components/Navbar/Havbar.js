@@ -1,22 +1,23 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Menu,  Avatar, Button, Dropdown } from 'antd'
+import { Menu, Avatar, Button, Dropdown } from 'antd'
 import { useDispatch, useSelector } from "react-redux";
 import { UserOutlined } from '@ant-design/icons'
 import { deleteToken } from "../../store/reducers/TokenSlice"
 import { deleteUser } from "../../store/reducers/UserSlice"
 import { getIconUrl } from "../Urls";
 import '../../index.css'
+import { Logout } from '../../api/AuthApiMethods';
 
 
 export const Navbar = (props) => {
     const navigation = useNavigate()
-    const { name, icon, userLogged } = useSelector(state => state.user);
+    const { id, name, icon, userLogged } = useSelector(state => state.user);
+    const { token } = useSelector(state => state.Token);
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        console.log("Ваше имя " + name)
-        console.log(userLogged)
+        
     }, [name, userLogged])
 
     const mainNavItems = [
@@ -24,7 +25,7 @@ export const Navbar = (props) => {
             label: <Link to="/" >Магазин</Link>
         },
         {
-            label: <Link to="/blog" >Блог</Link>
+            label: <Link to="/blog" >Книжный клуб</Link>
         },
         {
             label: <Link to="/about" >О нас</Link>
@@ -50,7 +51,8 @@ export const Navbar = (props) => {
             key: '3',
             danger: true,
             label: 'Выход',
-            onClick: () => {
+            onClick: async () => {
+                await Logout(token, id)
                 dispatch(deleteToken())
                 dispatch(deleteUser())
             },
@@ -63,9 +65,11 @@ export const Navbar = (props) => {
 
     return (
         <>
-            <div style={{ background: '#FFFFFF' }}>
+            <div style={{ background: '#FFFFFF', position: "fixed", top: "0", zIndex: "1000", width: "100%"}}>
                     <nav className="navbarMainStyle" style={{ maxHeight: "50", border: "20px" }}>
-                        <h1 style={{ marginTop: 1 }}>Bookland</h1>
+                        <a href='/' style={{textDecoration: "none", color: "black"}}>
+                            <h1 style={{ marginTop: 1 }}>Bookland</h1>
+                        </a>
                         <div style={{ width: '100%' }}>
                             <Menu mode="horizontal" items={mainNavItems} style={{ fontSize: '25px' }} />
                         </div>
@@ -97,7 +101,7 @@ export const Navbar = (props) => {
 
                         
                     </nav>
-        </div>
+            </div>
         <div className="mainPartStyle">
             {props.children}
         </div>

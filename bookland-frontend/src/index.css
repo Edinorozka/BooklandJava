@@ -11,6 +11,16 @@ code {
     monospace;
 }
 
+a {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  
+  a:hover {
+    color: #7146bd;
+  }
+
 .navbarMainStyle {
     font-size: 20px;
     display: flex;
@@ -27,7 +37,7 @@ code {
 }
 
 .mainPartStyle {
-    padding-top: 1px;
+    padding-top: 50px;
 }
 
 .center{
@@ -46,6 +56,7 @@ code {
     background: white;
     margin: 0 5% 0 5%;
     padding: 1px 20px 1px 20px;
+    min-width: 500px;
     margin-bottom: 25px;
     display: flex;
 }
@@ -69,8 +80,8 @@ code {
 }
 
 .mainBodyStyle{
-    margin: 2vh 5% 2vh 5%;
-    display: flex;
+    margin: 2vh 25% 2vh 25%;
+    min-width: 500px;
 }
 
 .imageField {
@@ -107,8 +118,110 @@ code {
 }
 
 .mainCardsStyle{
-    height: 300px;
     background-color: #F5F5F5;
-    margin-right: 1.5vh;
     margin-bottom: 1.5vh;
+}
+
+.nullObjectBlockStyle{
+    display: block;
+    margin-left: auto; 
+    margin-right: auto;
+    text-align: center;
+    max-width: 30%;
+    min-width: 300px;
+}
+
+.cardMaterial{
+    min-width: 450px;
+    min-height: 300px;
+    max-width: 1500px;
+    max-height: 1200px;
+}
+
+.mainCardsStyle:hover {
+    box-shadow: 0 4px 8px rgba(113, 70, 189, 0.5);
+}
+
+.article-content {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.finderStyle{
+    width: 20%;
+    max-width: 200px;
+    min-width: 140px;
+}
+
+.showBooksStyle{
+    min-width: 500px;
+    width: 60%;
+    display: flex;
+}
+
+.shopMainContainer{
+    width: 100%;
+    min-width: 600px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 10px;
+}
+
+.shopCardStyle{
+    width: 100%;
+    max-width: 200px;
+    min-width: 100px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.shopCardStyle > * {
+    flex: 1;
+}
+
+.name-main-view-style {
+    height: auto;
+    min-height: 43px;
+    margin-block: 5px;
+    margin-bottom: 0px;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+    text-decoration: none;
+}
+
+.name-main-view-style:after {
+    background: linear-gradient(270deg, #fff 50%, #fff0);
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 20px;
+    position: absolute;
+    right: 0;
+    width: 24px;
+    z-index: 1;
+}
+
+.author-main-view-style{
+    overflow: hidden;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: rgb(180, 180, 180);
+}
+
+.prise-main-view-style{
+    height: 20px;
+    margin-block: 3px;
 }

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { authUrl, getUserUrl, refreshTokenUrl, createUrl, getIconUrl } from "../components/Urls";
+import { authUrl, getUserUrl, refreshTokenUrl, createUrl, getIconUrl, logoutUser } from "../components/Urls";
 import { getToken, deleteToken } from "../store/reducers/TokenSlice"
 import { getUser, deleteUser } from "../store/reducers/UserSlice"
 
@@ -59,6 +59,14 @@ export async function GetIcon(dispatch, icon){
         await axios.get(getIconUrl + icon).then(res => {
             return res.data
         })
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export async function Logout(token, userId) {
+    try {
+        await axios.get(logoutUser + userId, { headers: { Authorization: `Bearer ${token}` } })
     } catch (e) {
         console.log(e)
     }

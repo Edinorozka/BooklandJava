@@ -3,9 +3,10 @@ package com.booklnad.bookland.DB.entity;
 import com.booklnad.bookland.enums.TypeArticles;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "articles")
@@ -21,7 +22,7 @@ public class Articles {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String text;
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
@@ -31,4 +32,15 @@ public class Articles {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TypeArticles type;
+    @OneToMany(mappedBy = "article")
+    private Set<Materials> materials = new LinkedHashSet<>();
+
+    public Articles(String title, String description, String text, User user, Date publication, TypeArticles type) {
+        this.title = title;
+        this.description = description;
+        this.text = text;
+        this.user = user;
+        this.publication = publication;
+        this.type = type;
+    }
 }

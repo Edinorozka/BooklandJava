@@ -4,7 +4,7 @@ import '../../index.css'
 
 const Image = () => {
     return (
-        <img src={Image1} style={{ width: 425, height: 375, margin: 10 }}   />
+        <img src={Image1} style={{ maxWidth: 425, maxHeight: 375, minWidth: 225, minHeight: 175, margin: 10 }}   />
         )
 }
 

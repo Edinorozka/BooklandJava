@@ -1,16 +1,37 @@
 import React, { useEffect, useState } from 'react'
-import { GetArticles } from '../../api/BlogApiMethods';
-import { Button, Input, Space, Select, Card } from 'antd';
+import { useNavigate } from 'react-router-dom'
+import { GetArticles, GetArticlesSize } from '../../api/BlogApiMethods';
+import { Button, Space, Select, Card, Skeleton, Pagination, Avatar, Carousel } from 'antd';
+import { useDispatch, useSelector } from "react-redux";
+import { blogUrlMaterial, getIconUrl } from '../Urls';
+import { CheckToken, RefreshToken } from '../../api/UserApiMethods';
+import { deleteToken } from "../../store/reducers/TokenSlice"
+import { deleteUser } from "../../store/reducers/UserSlice"
+import { UserOutlined } from '@ant-design/icons';
 
 
 export const Blog = () => {
     const [data, setData] = useState([]);
+    const [size, setSize] = useState(0);
+    const [current, setCurrent] = useState(0);
+    const [isLoading, setIsLoading] = useState(false)
     const [sortType, setSortType] = useState(true);
     const [typeArticles, setTypeArticles] = useState('ALL');
+    const { name, role } = useSelector(state => state.user);
+    const { token, refresh } = useSelector(state => state.Token);
+    const dispatch = useDispatch();
+    const navigation = useNavigate()
 
     const allArticles = async () => {
-        const res = await GetArticles(sortType, typeArticles);
+        const res = await GetArticles(sortType, typeArticles, current);
         setData(res)
+        if (res != null)
+            setIsLoading(true)
+    }
+
+    const sizeArticles = async () => {
+        const res = await GetArticlesSize(typeArticles);
+        setSize(res)
     }
 
     const handleChangeSort = (value) => {
@@ -25,7 +46,32 @@ export const Blog = () => {
     
     useEffect(() => {
         allArticles()
-    }, [sortType, typeArticles]);
+        sizeArticles()
+    }, [sortType, typeArticles, current]);
+
+    const CreateNewPostClick = async () => {
+        const checkToken = await CheckToken(token)
+        if (checkToken){
+            navigation(`/createPost`)
+        } else {
+            const config = {
+                refreshToken: refresh
+            }
+            const checkToken = await RefreshToken(dispatch, config)
+            if (checkToken){
+                navigation(`/createPost`)
+            } else {
+                dispatch(deleteToken())
+                dispatch(deleteUser())
+                navigation(`/login`)
+            }
+        }
+        
+    }
+
+    const CardOpen = (id) => {
+        navigation(`/blog/${id}`)
+    }
 
     return (
         <div className='mainBodyStyle'>
@@ -75,23 +121,67 @@ export const Blog = () => {
                         ]}
                     />
                     </Space> 
-                <Button type="primary" style={{ float: "right" }}>добавить статью</Button>   
+                {name &&
+                    <Button type="primary" style={{ float: "right" }} onClick={() => CreateNewPostClick()}>Добавить статью</Button>   
+                }
+                  
                 </div>
             <hr style={{borderColor: "#F5F5F5"}}/>
-            <div className='ArticlesGrid'>
-            {data.map((article) => {
-                    return <Card
-                        key={article.id}
-                        className={"mainCardsStyle"}
-                        bordered={false}
-                        hoverable
-                    >
-                        <h1>{article.title} </h1>
-                        <p>{article.description}</p>
-                        <p>{article.publication}</p>
-                    </Card>
-                })}
-            </div>  
+            {isLoading ? 
+                <div>
+                {data.length > 0 ? 
+                    <div>
+                        {data.map((article) => {
+                        return <Card
+                                key={article.id}
+                                className={"mainCardsStyle"}
+                                bordered={false}
+                                hoverable
+                                onClick={() => CardOpen(article.id)}
+                            >
+                                <div className="text" style={{display: "flex", marginTop: "-25px"}}>
+                                    {article.author.author_image? 
+                                        <Avatar size={35} src={getIconUrl + article.author.author_image} style={{marginTop: "18px"}} />
+                                    : 
+                                        <Avatar size={35} icon={<UserOutlined />} style={{marginTop: "18px"}}/>
+                                    }            
+                                    <p style={{marginRight: "20px"}}>{article.author.author_name}</p>
+                                    <p style={{color: "grey"}}>{article.publication}</p>
+                                </div>
+                                <h1 style={{ marginTop: '-10px', textAlign: "center", color: "#7146bd"}}>{article.title} </h1>
+                                <Carousel
+                                    autoplay
+                                    arrows
+                                    infinite={false}>
+                                    {article.materials.map((material) => {
+                                        return <img key={material.id} src={blogUrlMaterial + '/' + material.location} alt={material.text} className='cardMaterial'/>
+                                    })}
+                                </Carousel>
+                                <p className="text">{article.description}</p>
+                            </Card>
+                        })}
+                    <Pagination
+                        align="center"
+                        defaultCurrent={1}
+                        defaultPageSize={20}
+                        showSizeChanger={false}
+                        total={size}
+                        onChange={(page) => {setCurrent(page)}}/>
+                    </div>
+                    :
+                    <div className="text nullObjectBlockStyle">
+                        <p>К сожалению по данной теме нет ещё ни одной статьи</p>
+                        <p>Станьте первым!!!</p>
+                        <Button type="primary"
+                        style={{display: "block", marginLeft: "auto", marginRight: "auto"}}
+                        onClick={() => CreateNewPostClick()}>добавить статью</Button>  
+                    </div>
+                    }
+                </div>
+                :
+                <Skeleton active />
+            }
+              
             </Space>
         </div>
     )

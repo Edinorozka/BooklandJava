@@ -2,7 +2,10 @@ package com.booklnad.bookland.controllers.authorization;
 
 import com.booklnad.bookland.DB.entity.User;
 import com.booklnad.bookland.DB.repository.UserRepository;
-import com.booklnad.bookland.dto.*;
+import com.booklnad.bookland.dto.requests.JwtRequest;
+import com.booklnad.bookland.dto.requests.RefreshJwtRequest;
+import com.booklnad.bookland.dto.responses.JwtResponse;
+import com.booklnad.bookland.dto.responses.UserResponse;
 import com.booklnad.bookland.enums.Role;
 import com.booklnad.bookland.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -26,6 +31,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthorizationController {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
+
+    @Value("${icons.path}")
+    private String iconPath;
 
     @Autowired
     private UserRepository userRepository;
@@ -71,11 +79,13 @@ public class AuthorizationController {
         return ResponseEntity.ok(token);
     }
 
-    @GetMapping(path = "/singIn/{icon}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
-    public byte[] getIcon(@PathVariable String icon) throws IOException {
-        InputStream is = AuthorizationController.class.getResourceAsStream("/data/icons/" + icon);
+    @GetMapping(path = "/singIn/getImage/{icon}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    public byte[] getIcon(@PathVariable String icon){
         try {
-            return is.readAllBytes();
+            InputStream is = new FileInputStream(iconPath + icon);
+            byte[] bytesIcon = is.readAllBytes();
+            is.close();
+            return bytesIcon;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -97,5 +107,15 @@ public class AuthorizationController {
     public @ResponseBody String deleteUser(@RequestBody User user){
         userRepository.delete(user);
         return ("Пользователь удалён");
+    }
+
+    @GetMapping(path = "/")
+    public ResponseEntity<String> checkToken(){
+        return ResponseEntity.ok("TokenIsActive");
+    }
+
+    @GetMapping(path = "/logout/{userId}")
+    public void logout(@PathVariable int userId){
+        authService.delete(userId);
     }
 }
