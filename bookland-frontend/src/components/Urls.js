@@ -11,6 +11,7 @@ export const getOneSeries = 'http://localhost:8080/shop/open/oneSeries'
 export const getPublishers = 'http://localhost:8080/shop/open/publishers'
 export const getAuthors = 'http://localhost:8080/shop/open/authors'
 export const getAuthor = 'http://localhost:8080/shop/open/author'
+export const getLimitsPrises = 'http://localhost:8080/shop/open/prises'
 
 export const blogUrlMain = 'http://localhost:8080/blog/'
 export const blogUrlSize = 'http://localhost:8080/blog/size'

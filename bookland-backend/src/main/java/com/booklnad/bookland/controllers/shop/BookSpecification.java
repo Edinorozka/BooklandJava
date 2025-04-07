@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BookSpecification {
+public class BookSpecification{
 
     public Specification<Book> getBooksByParams(FindBookParam params) {
         return (root, query, criteriaBuilder) -> {
@@ -34,8 +34,12 @@ public class BookSpecification {
             if (params.getInName() != null && !params.getInName().isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + params.getInName().toLowerCase() + "%"));
             }
-            if (params.getPrise() != 0) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("prise"), params.getPrise()));
+            if (params.getLowPrise() != 0) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("prise"), params.getLowPrise()));
+            }
+
+            if (params.getHighPrise() != 0) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("prise"), params.getHighPrise()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

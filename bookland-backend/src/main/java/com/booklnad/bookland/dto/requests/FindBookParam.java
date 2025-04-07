@@ -10,6 +10,7 @@ public class FindBookParam {
     private int series;
     private String inName;
     private int author;
-    private int prise;
+    private int lowPrise;
+    private int highPrise;
     private int page;
 }

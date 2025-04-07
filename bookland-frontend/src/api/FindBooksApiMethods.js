@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getAllparams, getAuthor, getAuthors, getGenre, getGenres, getOneSeries, getPublishers, getSeries, getTypes, shopSizeUrl, shopUrlMain } from "../components/Urls";
+import { getAllparams, getAuthor, getAuthors, getGenre, getGenres, getLimitsPrises, getOneSeries, getPublishers, getSeries, getTypes, shopSizeUrl, shopUrlMain } from "../components/Urls";
 
 export const GetBooksSize = async (params) => {
     try{
@@ -11,7 +11,8 @@ export const GetBooksSize = async (params) => {
                 series: params.series,
                 inName: params.inName,
                 author: params.author,
-                prise: params.prise,
+                lowPrise: params.lowPrise,
+                highPrise: params.highPrise,
                 page: params.page
             }
         }
@@ -33,7 +34,8 @@ export const GetBooks = async (params) => {
                 series: params.series,
                 inName: params.inName,
                 author: params.author,
-                prise: params.prise,
+                lowPrise: params.lowPrise,
+                highPrise: params.highPrise,
                 page: params.page
             }
         }
@@ -193,6 +195,27 @@ export const GetAuthor = async (find) => {
             }
         }
         const res = await axios.get(getAuthor, config);
+        return res.data
+    } catch (e) {
+        console.log(e)
+        return 0
+    } 
+}
+
+export const GetLimitsPrises = async (params) => {
+    try{
+        const config = {
+            params: {
+                type: params.type,
+                genre: params.genre,
+                publisher: params.publisher,
+                series: params.series,
+                inName: params.inName,
+                author: params.author,
+                page: params.page
+            }
+        }
+        const res = await axios.get(getLimitsPrises, config);
         return res.data
     } catch (e) {
         console.log(e)

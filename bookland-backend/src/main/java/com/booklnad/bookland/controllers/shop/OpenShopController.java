@@ -5,6 +5,7 @@ import com.booklnad.bookland.DB.repository.*;
 import com.booklnad.bookland.dto.requests.FindBookParam;
 import com.booklnad.bookland.dto.responses.AllFinderParams;
 import com.booklnad.bookland.dto.responses.BooksCards;
+import com.booklnad.bookland.dto.responses.MinMaxPrises;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -60,7 +62,6 @@ public class OpenShopController {
     @GetMapping("/")
     @Transactional
     public ResponseEntity<ArrayList<BooksCards>> getBooks(@ModelAttribute FindBookParam find){
-        log.info(find.toString());
         Specification<Book> specification = bookSpecification.getBooksByParams(find);
         Pageable pageable = PageRequest.of(find.getPage(), 16);
         ArrayList<BooksCards> result = new ArrayList<>();
@@ -215,6 +216,18 @@ public class OpenShopController {
                 return ResponseEntity.ok(author.get());
             else
                 return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/prises")
+    public ResponseEntity<MinMaxPrises> getLimitPrises(@ModelAttribute FindBookParam find){
+        try{
+            ArrayList<Book> books = (ArrayList<Book>) bookRepository.findAll(bookSpecification.getBooksByParams(find));
+            int min = books.stream().min(Comparator.comparingInt(Book::getPrise)).get().getPrise();
+            int max = books.stream().max(Comparator.comparingInt(Book::getPrise)).get().getPrise();
+            return ResponseEntity.ok(new MinMaxPrises(min, max));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

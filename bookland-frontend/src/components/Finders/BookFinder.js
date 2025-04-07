@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Space, Select, Skeleton, Pagination, Slider, InputNumber } from 'antd';
-import { GetAllparams, GetAuthor, GetAuthors, GetBooks, GetBooksSize, GetGenre, GetGenres, GetOneSeries, GetPublishers, GetSeries, GetTypes } from '../../api/FindBooksApiMethods';
+import { GetAllparams, GetAuthor, GetAuthors, GetBooks, GetBooksSize, GetGenre, GetGenres, GetLimitsPrises, GetOneSeries, GetPublishers, GetSeries, GetTypes } from '../../api/FindBooksApiMethods';
+import { getLimitsPrises } from '../Urls';
 
 
 export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
+    const navigation = useNavigate()
     const [isLoading, setIsLoading] = useState(false)
 
     const [main, setMain] = useState([]);
@@ -16,6 +18,12 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
     const [publishers, setPublishers] = useState([]);
     const [genres, setGenres] = useState([]);
     const [authors, setAuthors] = useState([]);
+
+    const [lowPrise, setLowPrise] = useState(0);
+    const [highPrise, setHighPrise] = useState(100);
+
+    const [lowLimitPrise, setLowLimitPrise] = useState(0);
+    const [highLimitPrise, setHighLimitPrise] = useState(100);
 
     const [genre, setGenre] = useState(null);
     const [oneSeries, setOneSeries] = useState(null);
@@ -28,7 +36,8 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
             series: seriesId ? seriesId : 0,
             inName: inName ? inName : null,
             author: authorId ? authorId : 0,
-            prise: 0,
+            lowPrise: 0,
+            highPrise: 0,
             page: 0,
         })
 
@@ -55,6 +64,11 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                 setSeries(formatData(res.series))
                 setPublishers(formatData(res.publishers))
                 setAuthors(formatAuthorData(res.authors))
+                const prises = await GetLimitsPrises(params);
+                setLowLimitPrise(prises.minPrise)
+                setHighLimitPrise(prises.maxPrise)
+                setLowPrise(prises.minPrise)
+                setHighPrise(prises.maxPrise)
 
                 setSize(await GetBooksSize(params))
                 setMain(await GetBooks(params))
@@ -128,14 +142,16 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
             setMain(await GetBooks(params))
         }
 
-        const [lowPrise, setLowPrise] = useState(0);
-        const [highPrise, setHighPrise] = useState(100);
-
         const ChangeLowPrise = (value) => {
             if (value >= highPrise)
                 setLowPrise(highPrise)
             else
                 setLowPrise(value)
+
+            if(lowLimitPrise != value)
+                params.lowPrise = value
+            else
+                params.lowPrise = 0
         }
 
         const ChangeHighPrise = (value) => {
@@ -143,19 +159,32 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                 setHighPrise(lowPrise)
             else
                 setHighPrise(value)
+
+            if(highLimitPrise != value)
+                params.highPrise = value
+            else
+                params.highPrise = 0
         }
 
         const handleSliderChange = (value) => {
             if (value[0] >= value[1]) {
                 setLowPrise(value[1]);
                 setHighPrise(value[0]);
-              } else {
+            } else {
                 setLowPrise(value[0]);
                 setHighPrise(value[1]);
-              }
-          };
+            }
 
-    console.log(main)
+            if(lowLimitPrise != value[0])
+                params.lowPrise = value[0]
+            else
+                params.lowPrise = 0
+
+            if(highLimitPrise != value[1])
+                params.highPrise = value[1]
+            else
+                params.highPrise = 0
+          };
 
     return (
         <>
@@ -169,7 +198,10 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                 {author != null &&
                     author.name + " " + author.lastName
                 }
-                {genre == null && oneSeries == null && author == null &&
+                {inName != null &&
+                    "Посик: " + inName
+                }
+                {genre == null && oneSeries == null && author == null && inName == null &&
                     "Все книги"
                 }
             </h1>
@@ -195,10 +227,10 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
 
                             <p>Цена</p>
                             <div style={{width: "100%", maxWidth: "150px", minWidth: "50px", margin: "auto"}}>
-                                <Slider range value={[lowPrise, highPrise]} onChange={handleSliderChange}/>
+                                <Slider range min={lowLimitPrise} max={highLimitPrise} value={[lowPrise, highPrise]} onChange={handleSliderChange}/>
                                 <Space direction="horizontal">
-                                    <InputNumber min={0} max={100} value={lowPrise} style={{width: "100%", minWidth: "25px"}} onChange={ChangeLowPrise}/>
-                                    <InputNumber min={0} max={100} value={highPrise} style={{width: "100%", minWidth: "25px"}} onChange={ChangeHighPrise}/>
+                                    <InputNumber min={lowLimitPrise} max={highLimitPrise} value={lowPrise} style={{width: "100%", minWidth: "25px"}} onChange={ChangeLowPrise}/>
+                                    <InputNumber min={lowLimitPrise} max={highLimitPrise} value={highPrise} style={{width: "100%", minWidth: "25px"}} onChange={ChangeHighPrise}/>
                                 </Space>
                             </div>
                             
@@ -236,17 +268,17 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                                             className={"shopCardStyle"}>
                                             <img src={"http://localhost:8080/shop/open/material/" + image} style={{height: "290px"}}/>
                                             <a href='' className='name-main-view-style'>{book.name}</a>
-                                            <p className='author-main-view-style'>{book.authors.map((author, index) => (
+                                            {book.authors.map((author, index) => (
                                                 <React.Fragment key={index}>
-                                                <a href={''} className='author-main-view-style'>
+                                                <a onClick={(e) => {e.preventDefault(); navigation(`shop/author/${author.id}`)}} className='author-main-view-style' >
                                                     {author.name} {author.lastName}
                                                 </a>
                                                 {index < book.authors.length - 1 && ', '}
                                                 </React.Fragment>
-                                            ))}</p>
+                                            ))}
                                             <p className='prise-main-view-style'>{book.prise} ₽</p>
                                             <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                                <Button type="primary" style={{width: "150px"}} onClick={console.log(book.isbn)}>Купить</Button>
+                                                <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
                                             </div> 
                                         </div>  
                                     } else {
@@ -256,7 +288,7 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                                             <p className='author-main-view-style'>{book.authors.map(author => `${author.name} ${author.lastName}`).join(', ')}</p>
                                             <p className='prise-main-view-style'>{book.prise} ₽</p>
                                             <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                                <Button type="primary" style={{width: "150px"}} onClick={console.log(book.isbn)}>Купить</Button>
+                                                <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
                                             </div> 
                                         </div>  
                                     }                                          
@@ -273,7 +305,8 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                             defaultPageSize={16}
                             showSizeChanger={false}
                             total={size}
-                            onChange={handlePageChange}/> 
+                            onChange={handlePageChange}
+                            style={{marginTop: "10px"}}/> 
                     </div>
                 :
                 <Skeleton active />}
