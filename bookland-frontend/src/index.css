@@ -80,8 +80,8 @@ a {
 }
 
 .mainBodyStyle{
-    margin: 2vh 25% 2vh 25%;
-    min-width: 500px;
+    margin: 2vh 20% 2vh 20%;
+    min-width: 1000px;
 }
 
 .imageField {
@@ -170,13 +170,14 @@ a {
     width: 100%;
     min-width: 600px;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, 220px);
     gap: 20px 10px;
+    justify-content: center;
 }
 
 .shopCardStyle{
     width: 100%;
-    max-width: 200px;
+    max-width: 220px;
     min-width: 100px;
     box-sizing: border-box;
     display: flex;
@@ -224,4 +225,56 @@ a {
 .prise-main-view-style{
     height: 20px;
     margin-block: 3px;
+}
+
+.banner-main-text{
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.banner-link{
+    float: right;
+    margin-top: -10px;
+    color: #987cc7
+}
+
+.genreSlider{
+    display: flex;
+    overflow-x: auto;
+    padding-left: 0px;
+    min-width: 775px;
+}
+
+.genreSliderItem{
+    margin-right: 15px;
+    width: 250px;
+    height: 250px;
+    font-size: 38px;
+    border-radius: 10px;
+    border: none;
+    word-break: break-word;
+    background-size: 'cover';
+    background-position: 'center';
+}
+
+.genreSliderItem:hover {
+    background-color: rgb(228, 219, 235);
+    opacity: 0.8;
+  }
+
+.cardInfoStyle {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 10px;
+    width: 100%
+}
+
+.cardImageStyle {
+    max-width: 100%;
+    min-width: 150px;
+    width: auto;
+    object-fit: contain;
 }

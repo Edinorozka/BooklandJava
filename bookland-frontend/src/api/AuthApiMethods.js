@@ -54,7 +54,7 @@ export async function RefreshToken(dispatch, refreshToken){
     }
 }
 
-export async function GetIcon(dispatch, icon){
+export async function GetIcon(icon){
     try {
         await axios.get(getIconUrl + icon).then(res => {
             return res.data

@@ -39,7 +39,7 @@ public class Config {
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/blog/**", "/auth/singIn/**", "/shop/open/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/blog/**", "/auth/singIn/**", "/shop/open/**", "/banner/open/**", "/review/open/**").permitAll()
                         .requestMatchers("/**").authenticated())
                         .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

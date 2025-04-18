@@ -3,7 +3,6 @@ package com.booklnad.bookland.enums;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-@RequiredArgsConstructor
 public enum Role implements GrantedAuthority {
     USER("USER"),
     ADMIN("ADMIN");
@@ -13,5 +12,9 @@ public enum Role implements GrantedAuthority {
     @Override
     public String getAuthority() {
         return value;
+    }
+
+    Role(String value) {
+        this.value = value;
     }
 }

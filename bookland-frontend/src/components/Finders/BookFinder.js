@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Space, Select, Skeleton, Pagination, Slider, InputNumber } from 'antd';
 import { GetAllparams, GetAuthor, GetAuthors, GetBooks, GetBooksSize, GetGenre, GetGenres, GetLimitsPrises, GetOneSeries, GetPublishers, GetSeries, GetTypes } from '../../api/FindBooksApiMethods';
-import { getLimitsPrises } from '../Urls';
+import { getBookImage } from '../Urls';
 
 
 export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
@@ -187,7 +187,7 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
           };
 
     return (
-        <>
+        <div>
             <h1 style={{width: "100%", textAlign: "center"}}>
                 {genre != null && 
                     genre.name
@@ -205,7 +205,7 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                     "Все книги"
                 }
             </h1>
-            <div style={{display: "flex", alignItems: "flex-start"}}>
+            <div style={{display: "flex", alignItems: "flex-start", width: "100%"}}>
                 <div className={"mainBlockStyle" + ' ' + "finderStyle"} style={{marginRight: "15px", textAlign: "center"}}>
                     {isLoading ?
                         <>
@@ -256,42 +256,28 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                         <Skeleton active />
                     }
                 </div>
-                <div className={"mainBlockStyle"} style={{paddingTop: "15px", paddingBottom: "15px"}}>
+                <div className={"mainBlockStyle"} style={{paddingTop: "15px", paddingBottom: "15px", width: "100%"}}>
                 {isLoading ?
                     <div style={{width: "100%"}}>
                         {main.length > 0 ?
                             <div className="shopMainContainer">
                                 {main.map((book) => {
-                                    if (book.images.length > 0){
-                                        const image = book.images[0].location;
-                                        return <div key={book.isbn} 
-                                            className={"shopCardStyle"}>
-                                            <img src={"http://localhost:8080/shop/open/material/" + image} style={{height: "290px"}}/>
-                                            <a href='' className='name-main-view-style'>{book.name}</a>
-                                            {book.authors.map((author, index) => (
-                                                <React.Fragment key={index}>
+                                    return <div key={book.isbn} className={"shopCardStyle"}>
+                                        {book.images.length > 0 && <img src={getBookImage + book.images[0].location} style={{height: "auto"}}/>}
+                                        <a onClick={() => navigation(`/${book.isbn}`)} className='name-main-view-style'>{book.name}</a>
+                                        {book.authors.map((author, index) => (
+                                            <React.Fragment key={index}>
                                                 <a onClick={(e) => {e.preventDefault(); navigation(`shop/author/${author.id}`)}} className='author-main-view-style' >
                                                     {author.name} {author.lastName}
                                                 </a>
                                                 {index < book.authors.length - 1 && ', '}
-                                                </React.Fragment>
-                                            ))}
-                                            <p className='prise-main-view-style'>{book.prise} ₽</p>
-                                            <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                                <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
-                                            </div> 
-                                        </div>  
-                                    } else {
-                                        return <div key={book.isbn} 
-                                            className={"shopCardStyle"}>
-                                            <p className='name-main-view-style'>{book.name}</p>
-                                            <p className='author-main-view-style'>{book.authors.map(author => `${author.name} ${author.lastName}`).join(', ')}</p>
-                                            <p className='prise-main-view-style'>{book.prise} ₽</p>
-                                            <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                                <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
-                                            </div> 
-                                        </div>  
-                                    }                                          
+                                            </React.Fragment>
+                                        ))}
+                                        <p className='prise-main-view-style'>{book.prise} ₽</p>
+                                        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                            <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
+                                        </div> 
+                                    </div>                                         
                                 })}
                             </div>
                             :
@@ -312,6 +298,6 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                 <Skeleton active />}
                 </div>
             </div>            
-        </>
+        </div>
     )
 }

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { getAllparams, getAuthor, getAuthors, getGenre, getGenres, getLimitsPrises, getOneSeries, getPublishers, getSeries, getTypes, shopSizeUrl, shopUrlMain } from "../components/Urls";
+import { getAllGenres, getAllparams, getAuthor, getAuthors, getBookUrl, getGenre, getGenres, getLimitsPrises, getOneSeries, getPublishers, getSeries, getTypes, shopSizeUrl, shopUrlMain } from "../components/Urls";
 
 export const GetBooksSize = async (params) => {
     try{
@@ -47,6 +47,16 @@ export const GetBooks = async (params) => {
     } 
 }
 
+export const GetOneBook = async (isbn) => {
+    try{
+        const res = await axios.get(getBookUrl + isbn);
+        return res.data
+    } catch (e) {
+        console.log(e)
+        return 0
+    }
+}
+
 export const GetAllparams = async () => {
     try{
         const res = await axios.get(getAllparams);
@@ -85,6 +95,16 @@ export const GetGenre = async (find) => {
             }
         }
         const res = await axios.get(getGenre, config);
+        return res.data
+    } catch (e) {
+        console.log(e)
+        return 0
+    } 
+}
+
+export const GetAllGenre = async () => {
+    try{
+        const res = await axios.get(getAllGenres);
         return res.data
     } catch (e) {
         console.log(e)

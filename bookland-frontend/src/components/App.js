@@ -14,6 +14,7 @@ import { AuthorShop } from './Shop/AuthorShop';
 import { GenreShop } from './Shop/GenreShop';
 import { SeriesShop } from './Shop/SeriesShop';
 import { SearchBookShop } from './Shop/SearchBookShop';
+import { Card } from './Shop/Card';
 
 function App() {
     return (
@@ -24,12 +25,18 @@ function App() {
                             colorPrimary: '#7146bd',
                             colorBorderSecondary: '#FFFFFF',
                             boxShadow: "#7146bd",
+                        },
+                        components: {
+                            Carousel: {
+                                arrowSize: 30
+                            }
                         }
                     }}
                 >
                     <Navbar>
                         <Routes>
                             <Route path={'/'} element={<Shop />} />
+                            <Route path={'/:card_id'} element={<Card />} />
                             <Route path={'/shop/author/:author_id'} element={<AuthorShop />} />
                             <Route path={'/shop/genre/:genre_id'} element={<GenreShop />} />
                             <Route path={'/shop/series/:series_id'} element={<SeriesShop />} />

@@ -47,8 +47,8 @@ public class MainBlogController {
     private CommentRepository commentRepository;
 
     @GetMapping("/size")
-    public Integer getAllArticlesSize(@RequestParam(value = "type", required = false) String type){
-        int size = type == null ? articlesRepository.findAll().size() : articlesRepository.findAllAsc(type).size();
+    public Integer getAllArticlesSize(@RequestParam(value = "type", required = false) TypeArticles type){
+        int size = type == null ? articlesRepository.findAll().size() : articlesRepository.findByType(type).size();
         return size;
     }
 
@@ -97,5 +97,14 @@ public class MainBlogController {
             result.add(new CommentResponse(c));
         }
         return result;
+    }
+
+    @GetMapping(path = "/article/find")
+    public ResponseEntity<ArrayList<ArticlesResponse>> getArticlesByTitle(@RequestParam("find") String find){
+        ArrayList<ArticlesResponse> articles = new ArrayList<>();
+        for (Articles a : articlesRepository.findByName3(find)){
+            articles.add(new ArticlesResponse(a));
+        }
+        return ResponseEntity.ok(articles);
     }
 }

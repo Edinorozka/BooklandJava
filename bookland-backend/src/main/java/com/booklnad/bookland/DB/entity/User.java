@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "Users")
 @Getter
@@ -24,6 +27,7 @@ public class User{
     @Column(nullable = false)
     private String password;
 
+    @Column
     private String name;
 
     @Column(nullable = false)
@@ -32,6 +36,9 @@ public class User{
 
     @Column(name = "icon")
     private String icon;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews = new HashSet<>();
 
     public User(String login, String password, String name, Role role, String icon) {
         this.login = login;

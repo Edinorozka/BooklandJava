@@ -1,10 +1,13 @@
 export const shopUrlMain = 'http://localhost:8080/shop/open/'
 export const shopSizeUrl = 'http://localhost:8080/shop/open/size'
 export const getBookUrl = 'http://localhost:8080/shop/open/book/'
+export const getBookImage = "http://localhost:8080/shop/open/material/"
+export const getShopMaterialsImage = "http://localhost:8080/shop/open/shopMaterials/"
 
 export const getAllparams = 'http://localhost:8080/shop/open/allParams'
 export const getTypes = 'http://localhost:8080/shop/open/types'
 export const getGenres = 'http://localhost:8080/shop/open/genres'
+export const getAllGenres = 'http://localhost:8080/shop/open/allGenres'
 export const getGenre = 'http://localhost:8080/shop/open/genre'
 export const getSeries = 'http://localhost:8080/shop/open/series'
 export const getOneSeries = 'http://localhost:8080/shop/open/oneSeries'
@@ -12,6 +15,14 @@ export const getPublishers = 'http://localhost:8080/shop/open/publishers'
 export const getAuthors = 'http://localhost:8080/shop/open/authors'
 export const getAuthor = 'http://localhost:8080/shop/open/author'
 export const getLimitsPrises = 'http://localhost:8080/shop/open/prises'
+
+export const getBanners = 'http://localhost:8080/banner/open/'
+
+export const getReviews = 'http://localhost:8080/review/open/'
+export const getReviewsSize = 'http://localhost:8080/review/open/size'
+export const createReviews = 'http://localhost:8080/review/create'
+export const changeReviews = 'http://localhost:8080/review/change'
+export const deleteReviews = 'http://localhost:8080/review/delete'
 
 export const blogUrlMain = 'http://localhost:8080/blog/'
 export const blogUrlSize = 'http://localhost:8080/blog/size'

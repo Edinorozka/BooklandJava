@@ -9,6 +9,7 @@ import com.booklnad.bookland.dto.responses.MinMaxPrises;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,6 +32,9 @@ import java.util.Optional;
 public class OpenShopController {
     @Value("${book.image.path}")
     private String booksImagePath;
+
+    @Value("${shopMaterials.path}")
+    private String shopMaterialsPath;
 
     @Autowired
     private BookRepository bookRepository;
@@ -65,8 +69,15 @@ public class OpenShopController {
         Specification<Book> specification = bookSpecification.getBooksByParams(find);
         Pageable pageable = PageRequest.of(find.getPage(), 16);
         ArrayList<BooksCards> result = new ArrayList<>();
-        for (Book b : bookRepository.findAll(specification, pageable)){
-            result.add(new BooksCards(b));
+        if (find.getInName() == null){
+            for (Book b : bookRepository.findAll(specification, pageable)){
+                result.add(new BooksCards(b));
+            }
+        } else {
+            log.info(find.getInName());
+            for (Book b : bookRepository.findAll(specification, pageable).getContent().stream().limit(3).toList()){
+                result.add(new BooksCards(b));
+            }
         }
         return ResponseEntity.ok(result);
     }
@@ -133,6 +144,15 @@ public class OpenShopController {
         }
     }
 
+    @GetMapping("/allGenres")
+    public ResponseEntity<ArrayList<Genre>> getAllGenres(){
+        try{
+            return ResponseEntity.ok(genreRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/genre")
     public ResponseEntity<Genre> getGenres(@RequestParam(value = "find") Long find){
         try{
@@ -143,6 +163,18 @@ public class OpenShopController {
                 return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping(path = "/shopMaterials/{image}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE, "image/webp"})
+    public byte[] getBackground(@PathVariable String image){
+        try {
+            InputStream is = new FileInputStream(shopMaterialsPath + image);
+            byte[] bytesIcon = is.readAllBytes();
+            is.close();
+            return bytesIcon;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

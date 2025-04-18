@@ -3,12 +3,14 @@ package com.booklnad.bookland.controllers.shop;
 import com.booklnad.bookland.DB.entity.Book;
 import com.booklnad.bookland.dto.requests.FindBookParam;
 import jakarta.persistence.criteria.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class BookSpecification{
 
@@ -32,7 +34,14 @@ public class BookSpecification{
                 predicates.add(criteriaBuilder.equal(root.get("series").get("id"), params.getSeries()));
             }
             if (params.getInName() != null && !params.getInName().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + params.getInName().toLowerCase() + "%"));
+                Predicate name = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + params.getInName().toLowerCase() + "%");
+                Predicate authorName = criteriaBuilder.like(criteriaBuilder.lower(root.get("authors").get("name")), "%" + params.getInName().toLowerCase() + "%");
+                Predicate authorSecondName = criteriaBuilder.like(criteriaBuilder.lower(root.get("authors").get("secondName")), "%" + params.getInName().toLowerCase() + "%");
+                Predicate authorLastName = criteriaBuilder.like(criteriaBuilder.lower(root.get("authors").get("lastName")), "%" + params.getInName().toLowerCase() + "%");
+
+                Predicate result = criteriaBuilder.or(name, authorName, authorLastName, authorSecondName);
+
+                predicates.add(result);
             }
             if (params.getLowPrise() != 0) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("prise"), params.getLowPrise()));
