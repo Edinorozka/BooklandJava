@@ -84,6 +84,20 @@ a {
     min-width: 1000px;
 }
 
+@media (max-width: 1900px) {
+    .mainBodyStyle {
+      min-width: 900px;
+      margin: 2vh 15% 2vh 15%;
+    }
+  }
+
+@media (max-width: 1600px) {
+    .mainBodyStyle {
+      min-width: 800px;
+      margin: 2vh 10% 2vh 10%;
+    }
+  }
+
 .imageField {
     background-color: #F5F5F5;
     display: flex;
@@ -184,9 +198,7 @@ a {
     flex-direction: column;
 }
 
-.shopCardStyle > * {
-    flex: 1;
-}
+
 
 .name-main-view-style {
     height: auto;
@@ -224,7 +236,7 @@ a {
 
 .prise-main-view-style{
     height: 20px;
-    margin-block: 3px;
+    margin-block: 10px;
 }
 
 .banner-main-text{
@@ -277,4 +289,23 @@ a {
     min-width: 150px;
     width: auto;
     object-fit: contain;
+}
+
+.buy-buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.quantity-input-number {
+    width: 60px;
+    margin-right: 4px;
+}
+
+.purchasesMainContainer{
+    width: 100%;
+    min-width: 600px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 220px);
+    gap: 20px 10px;
 }

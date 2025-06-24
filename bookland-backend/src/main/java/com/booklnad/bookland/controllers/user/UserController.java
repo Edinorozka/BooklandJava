@@ -1,9 +1,10 @@
-package com.booklnad.bookland.controllers.authorization;
+package com.booklnad.bookland.controllers.user;
 
 import com.booklnad.bookland.DB.entity.User;
 import com.booklnad.bookland.DB.repository.UserRepository;
 import com.booklnad.bookland.dto.requests.JwtRequest;
 import com.booklnad.bookland.dto.requests.RefreshJwtRequest;
+import com.booklnad.bookland.dto.requests.UpdateUserRequest;
 import com.booklnad.bookland.dto.responses.JwtResponse;
 import com.booklnad.bookland.dto.responses.UserResponse;
 import com.booklnad.bookland.enums.Role;
@@ -29,8 +30,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path = "/auth")
 @RequiredArgsConstructor
-public class AuthorizationController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthorizationController.class);
+public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Value("${icons.path}")
     private String iconPath;
@@ -117,5 +118,25 @@ public class AuthorizationController {
     @GetMapping(path = "/logout/{userId}")
     public void logout(@PathVariable int userId){
         authService.delete(userId);
+    }
+
+    @PutMapping(path = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> updateUser(@RequestParam("id") int id,
+                                                   @RequestParam("password") String password,
+                                                   @RequestParam(value = "name", required = false) String name,
+                                                   @RequestParam(value = "role", required = false) String role,
+                                                   @RequestPart(value = "icon", required = false) MultipartFile icon){
+        UpdateUserRequest request = new UpdateUserRequest();
+        request.setId(id);
+        request.setRole(role);
+        request.setName(name);
+        request.setIcon(icon);
+        request.setPassword(password);
+        try {
+            UserResponse userResponse = authService.update(request);
+            return ResponseEntity.ok(userResponse);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

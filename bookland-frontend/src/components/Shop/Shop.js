@@ -7,6 +7,7 @@ import { BookFinder } from '../Finders/BookFinder';
 import { GetAllGenre } from '../../api/FindBooksApiMethods';
 import { getBookImage, getShopMaterialsImage } from '../Urls';
 import { GetBanners } from '../../api/BannerApiMethods';
+import { Buying } from '../buy/Buying';
 
 
 export const Shop = () =>{
@@ -29,7 +30,7 @@ export const Shop = () =>{
         <div className='mainBodyStyle'>
             <div style={{borderRadius: "15px", minWidth: "775px", marginBottom: "25px", boxShadow: "1px 1px 3px 1px rgba(0, 0, 0, 0.3)"}}>
                 {banners &&
-                    <Carousel arrows infinite autoplay autoplaySpeed={5000} style={{height: "400px"}}>
+                    <Carousel arrows infinite autoplay autoplaySpeed={10000} style={{height: "400px"}}>
                         {banners.sort((a, b) => a.id - b.id).map((banner) => {
                             return <div key = {banner.id} 
                             style={{
@@ -64,10 +65,16 @@ export const Shop = () =>{
                                                 <p className='banner-main-text' style={{color: banner.textColor, fontSize: banner.textSize, fontFamily: banner.textStyle}}>{banner.text ? banner.text : banner.book.about}</p>
                                                 <a className='banner-link' 
                                                     style={{color: banner.textColor, fontFamily: banner.textStyle, fontSize: banner.textSize}} 
-                                                    onClick={() => navigation(`/${banner.book.isbn}`)}>Подробнее</a>
+                                                    onClick={() => navigation(`card/${banner.book.isbn}`)}>Подробнее</a>
                                                 <Space direction="horizontal">
                                                     <p style={{color: banner.textColor, fontFamily: banner.textStyle, fontSize: banner.textSize}}>{banner.book.prise} ₽</p>
-                                                    <Button type="primary" style={{width: "100px"}} onClick={() => console.log(banner.id)}>Купить</Button>
+                                                    {banner.book.quantity > 0 ?
+                                                        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                                            <Buying isbn={banner.book.isbn} quantity={banner.book.quantity}/>
+                                                        </div> 
+                                                    :
+                                                        <p style={{textAlign: "center", margin: "0px"}}>Нет в наличии</p>
+                                                    }
                                                </Space>
                                             </div>
                                         </div>

@@ -1,5 +1,5 @@
 import axios from "axios"
-import { blogUrlMain, blogUrlSize, createArticle, createComment, deleteArticleUrl, deleteCommentUrl, getComments, openArticle, updateArticleUrl, updateCommentUrl } from "../components/Urls";
+import { blogFindThreeArticleUrl, blogUrlMain, blogUrlSize, createArticle, createComment, deleteArticleUrl, deleteCommentUrl, getComments, openArticle, updateArticleUrl, updateCommentUrl } from "../components/Urls";
 
 export const GetArticlesSize = async (typeArticles) => {
     try{
@@ -19,14 +19,15 @@ export const GetArticlesSize = async (typeArticles) => {
     } 
 }
 
-export const GetArticles = async (sortType, typeArticles, current) => {
+export const GetArticles = async (sortType, typeArticles, current, find) => {
     try {
         let config;
         if (typeArticles === 'ALL'){
             config = {
                 params: {
                     sort: sortType,
-                    current: current
+                    current: current,
+                    find: find
                 }
             }
         } else {
@@ -34,11 +35,30 @@ export const GetArticles = async (sortType, typeArticles, current) => {
                 params: {
                     sort: sortType,
                     current: current,
-                    type: typeArticles
+                    type: typeArticles,
+                    find: find
                 }
             }
         }
         const res = await axios.get(blogUrlMain, config);
+        return res.data
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+}
+
+export const GetThreeArticles = async (find) => {
+    try {
+        const config = {
+            params: {
+                sort: true,
+                current: 0,
+                find: find
+            }
+        }
+            
+        const res = await axios.get(blogFindThreeArticleUrl, config);
         return res.data
     } catch (e) {
         console.log(e)

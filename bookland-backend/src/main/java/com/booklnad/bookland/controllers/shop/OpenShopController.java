@@ -9,7 +9,6 @@ import com.booklnad.bookland.dto.responses.MinMaxPrises;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -69,15 +68,20 @@ public class OpenShopController {
         Specification<Book> specification = bookSpecification.getBooksByParams(find);
         Pageable pageable = PageRequest.of(find.getPage(), 16);
         ArrayList<BooksCards> result = new ArrayList<>();
-        if (find.getInName() == null){
-            for (Book b : bookRepository.findAll(specification, pageable)){
-                result.add(new BooksCards(b));
-            }
-        } else {
-            log.info(find.getInName());
-            for (Book b : bookRepository.findAll(specification, pageable).getContent().stream().limit(3).toList()){
-                result.add(new BooksCards(b));
-            }
+        for (Book b : bookRepository.findAll(specification, pageable)){
+            result.add(new BooksCards(b));
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/findWithLimitThree")
+    @Transactional
+    public ResponseEntity<ArrayList<BooksCards>> getThreeBooks(@ModelAttribute FindBookParam find){
+        Specification<Book> specification = bookSpecification.getBooksByParams(find);
+        Pageable pageable = PageRequest.of(find.getPage(), 16);
+        ArrayList<BooksCards> result = new ArrayList<>();
+        for (Book b : bookRepository.findAll(specification, pageable).getContent().stream().limit(3).toList()){
+            result.add(new BooksCards(b));
         }
         return ResponseEntity.ok(result);
     }
@@ -99,6 +103,7 @@ public class OpenShopController {
     public ResponseEntity<Book> getOneBook(@PathVariable int isbn){
         ArrayList<Author> authors = authorRepository.findByBookId(isbn);
         Optional<Book> book = bookRepository.findByIsbn(isbn);
+
         if (book.isPresent()){
             Book b = book.get();
             b.setAuthors(new HashSet<>(authors));

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Space, Select, Skeleton, Pagination, Slider, InputNumber } from 'antd';
 import { GetAllparams, GetAuthor, GetAuthors, GetBooks, GetBooksSize, GetGenre, GetGenres, GetLimitsPrises, GetOneSeries, GetPublishers, GetSeries, GetTypes } from '../../api/FindBooksApiMethods';
 import { getBookImage } from '../Urls';
+import { Buying } from '../buy/Buying';
 
 
 export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
@@ -90,8 +91,11 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
             }
     
         useEffect(() => {
+                if (inName && params.inName != inName){
+                    params.inName = inName
+                }
                 getInfo()
-        }, []);
+        }, [inName]);
     
         const searchGenre = async (value) => {
             if (value){
@@ -263,8 +267,8 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                             <div className="shopMainContainer">
                                 {main.map((book) => {
                                     return <div key={book.isbn} className={"shopCardStyle"}>
-                                        {book.images.length > 0 && <img src={getBookImage + book.images[0].location} style={{height: "auto"}}/>}
-                                        <a onClick={() => navigation(`/${book.isbn}`)} className='name-main-view-style'>{book.name}</a>
+                                        {book.images.length > 0 && <img src={getBookImage + book.images[0].location} style={{width: 220, height: 340}}/>}
+                                        <a onClick={() => navigation(`/card/${book.isbn}`)} className='name-main-view-style'>{book.name}</a>
                                         {book.authors.map((author, index) => (
                                             <React.Fragment key={index}>
                                                 <a onClick={(e) => {e.preventDefault(); navigation(`shop/author/${author.id}`)}} className='author-main-view-style' >
@@ -274,9 +278,14 @@ export const BookFinder = ({genreId, authorId, seriesId, inName}) => {
                                             </React.Fragment>
                                         ))}
                                         <p className='prise-main-view-style'>{book.prise} ₽</p>
-                                        <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                            <Button type="primary" style={{width: "150px"}} onClick={() => console.log(book.isbn)}>Купить</Button>
-                                        </div> 
+                                        {book.quantity > 0 ?
+                                            <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                                <Buying isbn={book.isbn} quantity={book.quantity}/>
+                                            </div> 
+                                        :
+                                            <p style={{textAlign: "center", margin: "0px"}}>Нет в наличии</p>
+                                        }
+                                        
                                     </div>                                         
                                 })}
                             </div>

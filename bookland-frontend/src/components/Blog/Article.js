@@ -4,10 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CreateComment, DeleteArticle, DeleteComment, GetArticle, GetComments, UpdateComment } from '../../api/BlogApiMethods';
 import { Button, Modal, Space, Skeleton, Avatar, Input} from 'antd';
 import { UserOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getIconUrl } from '../Urls';
-import { CheckToken, RefreshToken } from '../../api/UserApiMethods';
+import { getBookImage, getIconUrl } from '../Urls';
+import { CheckToken, RefreshToken } from '../../api/AuthApiMethods';
 import { deleteToken } from "../../store/reducers/TokenSlice"
 import { deleteUser } from "../../store/reducers/UserSlice"
+import { Buying } from '../buy/Buying';
 
 export const Article = () => {
     const { TextArea } = Input;
@@ -179,7 +180,35 @@ export const Article = () => {
                         
                         <div>
                             <h1 style={{textAlign: "center", color: "#7146bd", fontSize: "52px", marginTop: "1px", marginBottom: "10px"}}>{article.title}</h1>
-                            <div className="article-content" dangerouslySetInnerHTML={{ __html: article.text }} style={{fontSize: "20px"}} />
+                            {article.book &&
+                                <div style={{width: "80%", height: "300px", borderRadius: "15px", marginLeft: "auto", marginRight: "auto", boxShadow: "1px 1px 3px 1px rgba(0, 0, 0, 0.3)", display: "flex"}}>
+                                <img src={getBookImage + article.book.images[0].location} style={{
+                                    width: "auto",
+                                    height: "300px",
+                                    borderTopLeftRadius: "15px",
+                                    borderBottomLeftRadius: "15px"}}/>
+                                <div style={{width: "100%"}}>
+                                    <h1 style={{textAlign: "center"}}>{article.book.name}</h1>
+                                    <p style={{paddingLeft: "15px", paddingRight: "15px"}}>{article.book.about}</p>
+                                    <div style={{display: "flex", paddingLeft: "15px", paddingRight: "15px"}}>
+                                        <Space direction="horizontal" style={{width: "100%"}}>
+                                            <p>{article.book.prise} ₽</p>
+                                            {article.book.quantity > 0 ?
+                                                <div style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                                    <Buying isbn={article.book.isbn} quantity={article.book.quantity}/>
+                                                </div> 
+                                            :
+                                                <p style={{textAlign: "center", margin: "0px"}}>Нет в наличии</p>
+                                            }
+                                        </Space>
+                                        <a style={{color: "#7146bd", paddingTop: "10px"}} 
+                                            onClick={() => navigation(`/card/${article.book.isbn}`)}>Подробнее</a>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            }
+                            <div className="article-content" dangerouslySetInnerHTML={{ __html: article.text }} style={{fontSize: "20px", textIndent: "2em"}} />
                             <div style={{display: "flex"}}>
                                 <p style={{color: "grey", fontSize: "20px"}}>{article.publication}</p>
                                 <Space direction="horizontal" style={{position: "absolute", right: "0", marginRight: "10px"}}>
@@ -191,7 +220,6 @@ export const Article = () => {
                                     }                                
                                 </Space>
                             </div>
-                            
                         </div>
                         <hr/>
                         <div style={{display: "flex", justifyContent: "center"}}>

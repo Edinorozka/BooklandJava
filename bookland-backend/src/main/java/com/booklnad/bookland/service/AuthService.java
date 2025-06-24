@@ -5,7 +5,9 @@ import com.booklnad.bookland.DB.entity.User;
 import com.booklnad.bookland.DB.repository.AuthorizedRepository;
 import com.booklnad.bookland.DB.repository.UserRepository;
 import com.booklnad.bookland.dto.requests.JwtRequest;
+import com.booklnad.bookland.dto.requests.UpdateUserRequest;
 import com.booklnad.bookland.dto.responses.JwtResponse;
+import com.booklnad.bookland.dto.responses.UserResponse;
 import com.booklnad.bookland.enums.Role;
 import com.booklnad.bookland.security.JwpProvider;
 import io.jsonwebtoken.Claims;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -142,5 +145,39 @@ public class AuthService {
 
     public void delete(int userId){
         authorizedRepository.deleteToken(userId);
+    }
+
+    public UserResponse update(UpdateUserRequest request){
+        Optional<User> user = userRepository.findById(request.getId());
+        if (user.isEmpty())
+            throw new RuntimeException();
+        User u = user.get();
+
+        if (passwordEncoder.matches(request.getPassword(), u.getPassword())){
+            if (request.getName() != null)
+                u.setName(request.getName());
+            else
+                u.setName(u.getLogin());
+
+            if (request.getRole() != null)
+                u.setRole(Role.valueOf(request.getRole()));
+
+            if (request.getIcon() != null) {
+                String iconName = UUID.randomUUID().toString();
+                String newIconName = iconName + request.getIcon().getOriginalFilename().substring(request.getIcon().getOriginalFilename().lastIndexOf('.'));
+                try {
+                    File iconDir = new File(iconPath);
+                    File oldIcon = new File(iconDir + "/" + u.getIcon());
+                    oldIcon.delete();
+                    request.getIcon().transferTo(new File(iconDir + "/" + newIconName));
+                    u.setIcon(newIconName);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return new UserResponse(u);
+        } else {
+            throw new RuntimeException("Неверный пароль");
+        }
     }
 }

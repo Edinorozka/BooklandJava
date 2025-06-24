@@ -1,6 +1,6 @@
 import axios from "axios"
-import { authUrl, getUserUrl, refreshTokenUrl, createUrl, getIconUrl, logoutUser } from "../components/Urls";
-import { getToken, deleteToken } from "../store/reducers/TokenSlice"
+import { authUrl, getUserUrl, refreshTokenUrl, createUrl, getIconUrl, logoutUser, updateUser } from "../components/Urls";
+import { getToken, deleteToken, refreshToken } from "../store/reducers/TokenSlice"
 import { getUser, deleteUser } from "../store/reducers/UserSlice"
 
 export const Login = async (dispatch, config) => {
@@ -44,16 +44,6 @@ export const RegUser = async (login, password, name, role, icon) => {
     }
 }
 
-export async function RefreshToken(dispatch, refreshToken){
-    try {
-        await axios.post(refreshTokenUrl, { refreshToken }).then(res => {
-            dispatch(getToken(res.data))
-        })
-    } catch (e) {
-        console.log(e)
-    }
-}
-
 export async function GetIcon(icon){
     try {
         await axios.get(getIconUrl + icon).then(res => {
@@ -64,10 +54,52 @@ export async function GetIcon(icon){
     }
 }
 
+export async function CheckToken(token) {
+
+    try {
+        await axios.get(getUserUrl, { headers: { Authorization: `Bearer ${token}` } })
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
+export async function RefreshToken(dispatch, config) {
+    try {
+        await axios.post(refreshTokenUrl, config).then(res => {
+            dispatch(refreshToken(res.data))
+        });
+        return true
+    } catch (e) {
+        return false
+    }
+}
+
 export async function Logout(token, userId) {
     try {
         await axios.get(logoutUser + userId, { headers: { Authorization: `Bearer ${token}` } })
     } catch (e) {
         console.log(e)
+    }
+}
+
+export const UpdateUser = async (id, password, name, image, token, dispatch) => {
+    try {
+        const bodyData = new FormData();
+        if (image && image instanceof File)
+            bodyData.append('icon', image, image.name);
+
+        const res = await axios.put(updateUser, bodyData, {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+                id: id,
+                name: name,
+                password: password,
+                role: null
+            }
+        })
+        dispatch(getUser(res.data))
+    } catch (e) {
+        return(e.status)
     }
 }

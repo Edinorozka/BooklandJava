@@ -49,14 +49,14 @@ export const Navbar = (props) => {
             key: '2',
             label: 'Корзина',
             onClick: () => {
-                navigation(`/cart`)
+                navigation(`/shop/cart`)
             }
         },
         {
             key: '3',
             label: 'Заказы',
             onClick: () => {
-                navigation(`/cart`)
+                navigation(`/purchases`)
             }
         },
         {
@@ -67,6 +67,7 @@ export const Navbar = (props) => {
                 await Logout(token, id)
                 dispatch(deleteToken())
                 dispatch(deleteUser())
+                navigation(`/`)
             },
         },
     ];

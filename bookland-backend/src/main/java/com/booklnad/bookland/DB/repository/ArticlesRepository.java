@@ -2,6 +2,7 @@ package com.booklnad.bookland.DB.repository;
 
 import com.booklnad.bookland.DB.entity.Articles;
 import com.booklnad.bookland.enums.TypeArticles;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,11 @@ public interface ArticlesRepository extends JpaRepository<Articles, Integer> {
     Optional<Articles> findByTitle(String title);
     Optional<Articles> findById(int id);
     ArrayList<Articles> findByType(TypeArticles type);
-    ArrayList<Articles> findByType(TypeArticles type, Pageable pageable);
+    Page<Articles> findByType(TypeArticles type, Pageable pageable);
+    @Query("SELECT a FROM Articles a WHERE a.title LIKE %:title%")
+    Page<Articles> findByTitle(@Param("title") String title, Pageable pageable);
+    @Query("SELECT a FROM Articles a WHERE a.type = :type AND a.title LIKE %:title%")
+    Page<Articles> findByTypeTitle(@Param("type") TypeArticles type, @Param("title") String title, Pageable pageable);
 
     ArrayList<Articles> findAll();
 

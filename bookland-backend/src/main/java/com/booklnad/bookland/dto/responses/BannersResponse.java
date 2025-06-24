@@ -45,6 +45,7 @@ public class BannersResponse {
         private BookImages images;
         private Set<Author> authors;
         private String about;
+        private int quantity;
 
         public BookFromBanner(Book book) {
             this.isbn = book.getIsbn();
@@ -53,6 +54,7 @@ public class BannersResponse {
             this.images = book.getImages().getFirst();
             this.authors = book.getAuthors();
             this.about = book.getAbout();
+            this.quantity = book.getQuantity();
         }
     }
 }

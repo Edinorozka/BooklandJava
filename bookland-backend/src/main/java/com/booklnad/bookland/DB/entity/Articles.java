@@ -34,13 +34,18 @@ public class Articles {
     private TypeArticles type;
     @OneToMany(mappedBy = "article")
     private Set<Materials> materials = new LinkedHashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
-    public Articles(String title, String description, String text, User user, Date publication, TypeArticles type) {
+    public Articles(String title, String description, String text, User user, Date publication, TypeArticles type, Book book) {
         this.title = title;
         this.description = description;
         this.text = text;
         this.user = user;
         this.publication = publication;
         this.type = type;
+        if (book != null)
+            this.book = book;
     }
 }

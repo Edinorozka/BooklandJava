@@ -40,6 +40,9 @@ public class User{
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Review> reviews = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Purchase> purchases;
+
     public User(String login, String password, String name, Role role, String icon) {
         this.login = login;
         this.password = password;

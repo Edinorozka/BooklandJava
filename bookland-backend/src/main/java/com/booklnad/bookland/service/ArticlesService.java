@@ -1,24 +1,20 @@
 package com.booklnad.bookland.service;
 
 import com.booklnad.bookland.DB.entity.Articles;
+import com.booklnad.bookland.DB.entity.Book;
 import com.booklnad.bookland.DB.entity.Materials;
-import com.booklnad.bookland.DB.repository.ArticlesRepository;
-import com.booklnad.bookland.DB.repository.CommentRepository;
-import com.booklnad.bookland.DB.repository.MaterialsRepository;
-import com.booklnad.bookland.DB.repository.UserRepository;
+import com.booklnad.bookland.DB.entity.User;
+import com.booklnad.bookland.DB.repository.*;
 import com.booklnad.bookland.dto.requests.ArticleRequest;
 import com.booklnad.bookland.dto.responses.ArticlesResponse;
+import com.booklnad.bookland.enums.TypeArticles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -27,7 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -48,6 +43,9 @@ public class ArticlesService{
     @Autowired
     private final CommentRepository commentRepository;
 
+    @Autowired
+    private final BookRepository bookRepository;
+
     public ArticlesResponse responseOneArticle(Articles a){
         return new ArticlesResponse(
                 a.getId(),
@@ -64,10 +62,13 @@ public class ArticlesService{
     public void saveNewArticle(ArticleRequest article){
         if (userRepository.findById(article.getAuthor_id()).isPresent()){
             try {
-                int id = new AtomicInteger().getAndIncrement();
-                System.out.println(id);
+                User user = userRepository.findById(article.getAuthor_id()).orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
+                Book book = null;
+                if (article.getType() == TypeArticles.BOOKS ) {
+                    book = bookRepository.findByIsbn(article.getBook_id()).orElseThrow(() -> new IllegalArgumentException("Книга не найден"));
+                }
                 Articles articles = new Articles(article.getTitle(), article.getDescription(), article.getText(),
-                        userRepository.findById(article.getAuthor_id()).get(), new Date(), article.getType());
+                        user, new Date(), article.getType(), book);
 
                 Document document = Jsoup.parse(article.getText());
                 List<String> photosName = new ArrayList<>();
@@ -123,7 +124,6 @@ public class ArticlesService{
             Articles a = articlesOptional.get();
             a.setTitle(article.getTitle());
             a.setDescription(article.getDescription());
-            a.setType(article.getType());
 
             Document document = Jsoup.parse(article.getText());
             List<String> photosName = new ArrayList<>();

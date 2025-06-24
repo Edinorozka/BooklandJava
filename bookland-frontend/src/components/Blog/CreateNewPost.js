@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Input, Space, Radio, message } from 'antd';
+import { Button, Input, Space, Radio, message, Select } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from "react-redux";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'
-import { CreateArticle, GetArticle, UpdateArticle } from '../../api/BlogApiMethods';
-import { RefreshToken } from '../../api/UserApiMethods';
+import { CreateArticle, GetArticle, GetThreeArticles, UpdateArticle } from '../../api/BlogApiMethods';
+import { RefreshToken } from '../../api/AuthApiMethods';
 import { deleteToken } from "../../store/reducers/TokenSlice"
 import { deleteUser } from "../../store/reducers/UserSlice"
+import { GetThreeBooks } from '../../api/FindBooksApiMethods';
+import { getBookImage } from '../Urls';
 
 export const CreateNewPost = () =>{
     const { article_id } = useParams();
@@ -29,6 +32,21 @@ export const CreateNewPost = () =>{
     const [type, setType] = useState("BOOKS");
 
     const [isLoaded, setIsLoaded] = useState(false);
+
+    const { Option } = Select;
+    const [searchText, setSearchText] = useState('');
+    const [selectBook, setSelectBook] = useState(-1);
+    const [params, setParams] = useState({
+                    inName: '',
+                    page: 0,
+                })
+    const [books, setBooks] = useState([])
+
+    const handleChange = (value) => {
+        setSelectBook(value)
+        const book = books.find(book => book.isbn === value)
+        setSearchText(book.name + " " + book.authors[0].name + " " + book.authors[0].lastName)
+    };
 
     const toolbarOptions = {
         toolbar: [
@@ -53,12 +71,21 @@ export const CreateNewPost = () =>{
         }
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (article_id){
             getArticle();
         }
         setIsLoaded(true)
     }, [article_id])
+
+    const getInfo = async () => {
+            const res = await GetThreeBooks(params);
+            setBooks(res)
+        }
+    
+    useEffect(() => {
+        getInfo()
+    }, [params]);
 
     const Create = async () => {
         if (title !== "" && text.length >= 10){
@@ -81,6 +108,7 @@ export const CreateNewPost = () =>{
                     type: type,
                     text: text,
                     author_id: id,
+                    book_id: selectBook,
                 }
                 res = await CreateArticle(config, token)
             }
@@ -148,17 +176,44 @@ export const CreateNewPost = () =>{
                 </Space>
                 <TextArea rows={3} maxLength={255} value={description} onChange={(e) => {setDescription(e.target.value)}}/>
 
-                <p style={{marginBottom: "-5px"}}>О чём будет ваша статья?</p>
-                {isLoaded &&  // Условный рендеринг Radio.Group
-                    <Radio.Group onChange={(e) => setType(e.target.value)} value={type}>
-                        <Radio.Button value="BOOKS">О книге</Radio.Button>
-                        <Radio.Button value="SHOP">О магазине</Radio.Button>
-                        <Radio.Button value="OTHER">О чём-нибудь другом</Radio.Button>
-                    </Radio.Group>
-                }
-
-                {type === "BOOKS" &&
-                    <p style={{marginBottom: "-5px"}}>О какой книге идёт речь?</p>
+                {!article_id && 
+                <>
+                    <p style={{marginBottom: "-5px"}}>О чём будет ваша статья?</p>
+                    {isLoaded &&
+                        <Radio.Group onChange={(e) => setType(e.target.value)} value={type}>
+                            <Radio.Button value="BOOKS">О книге</Radio.Button>
+                            <Radio.Button value="SHOP">О магазине</Radio.Button>
+                            <Radio.Button value="OTHER">О чём-нибудь другом</Radio.Button>
+                        </Radio.Group>
+                    }
+                    {type === "BOOKS" &&
+                        <>
+                            <p style={{marginBottom: "-5px"}}>О какой книге идёт речь?</p>
+                            <Select
+                                showSearch
+                                suffixIcon={<SearchOutlined />}
+                                value={searchText}
+                                onChange={handleChange}
+                                style={{ width: "100%" }}
+                                onSearch={(value) => {setParams((prevParams) => ({ ...prevParams, inName: value }))}}
+                                filterOption={false}
+                                >
+                                    {books.map((book) => {
+                                        return <Option value = {book.isbn} key={book.isbn}>
+                                            <div style={{display: "flex"}}>
+                                                <img  src={getBookImage + book.images[0].location} style={{width: "30px", marginRight: 10}}/>
+                                                <div>
+                                                    <p style={{margin: 0}}>{book.name}</p>
+                                                    <p style={{margin: 0, color: "grey"}}>{book.authors.map(author => `${author.name} ${author.lastName}`).join(', ')}</p>
+                                                </div>
+                                            </div>
+                                        </Option>
+                                    })}
+                            </Select>
+                        </>
+                        
+                    }
+                </>
                 }
 
                 <p style={{marginBottom: "-5px"}}>Текст статьи</p>

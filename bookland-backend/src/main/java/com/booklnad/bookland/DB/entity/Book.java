@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.Set;
 @Table(name = "Books")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"authors"})
+@ToString(exclude = {"authors", "images"})
+@EqualsAndHashCode(exclude = {"authors", "images"})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

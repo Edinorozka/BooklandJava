@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/article")
 public class ArticlesController {
-    private static final Logger logger = LoggerFactory.getLogger(ArticlesController.class);
     @Autowired
     private ArticlesService articlesService;
 
     @PostMapping(path = "/createArticle")
-    public String createArticle(@RequestBody ArticleRequest article){
-        articlesService.saveNewArticle(article);
-        return "ok";
+    public ResponseEntity<String> createArticle(@RequestBody ArticleRequest article){
+        try {
+            articlesService.saveNewArticle(article);
+            return ResponseEntity.ok("ok");
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping(path = "/delete/{articleId}")
@@ -31,7 +34,6 @@ public class ArticlesController {
             articlesService.deleteArticle(articleId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }

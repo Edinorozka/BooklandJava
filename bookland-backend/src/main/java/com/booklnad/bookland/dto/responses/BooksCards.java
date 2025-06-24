@@ -14,6 +14,7 @@ public class BooksCards {
     private String name;
     private Set<Author> authors;
     private int prise;
+    private int quantity;
     private List<BookImages> images;
 
     public BooksCards(Book book) {
@@ -22,5 +23,6 @@ public class BooksCards {
         this.authors = book.getAuthors();
         this.prise = book.getPrise();
         this.images = book.getImages();
+        this.quantity = book.getQuantity();
     }
 }

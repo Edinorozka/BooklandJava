@@ -11,6 +11,7 @@ import { ChangeReview, CreateReview, DeleteReview, GetReviews, GetReviewsSize } 
 import { RefreshToken } from '../../api/AuthApiMethods';
 import { deleteToken } from '../../store/reducers/TokenSlice';
 import { deleteUser } from '../../store/reducers/UserSlice';
+import { Buying } from '../buy/Buying';
 
 export const Card = () => {
     const navigation = useNavigate();
@@ -48,7 +49,7 @@ export const Card = () => {
     
     useEffect(() => {
         getInfo()
-    }, []);
+    }, [card_id]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = (r) => {
@@ -135,7 +136,7 @@ export const Card = () => {
         setReviews(r)
   }
 
-  const handlePageChange = async (page) => {
+    const handlePageChange = async (page) => {
         const r = await GetReviews(page - 1, card_id)
         setReviews(r)
     };
@@ -186,7 +187,7 @@ export const Card = () => {
                                                         <CheckCircleOutlined style={{color: "green", fontSize: '30px', marginRight: '15px'}}/>
                                                         <p>В наличии</p>
                                                     </div>
-                                                    <Button type="primary" style={{width: "150px"}} onClick={() => console.log(card.isbn)}>Купить</Button>
+                                                    <Buying isbn={card.isbn} quantity={card.quantity}/>
                                                 </div>
                                             :
                                                 <div style={{display: "flex"}}>

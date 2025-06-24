@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -47,21 +48,42 @@ public class MainBlogController {
     private CommentRepository commentRepository;
 
     @GetMapping("/size")
-    public Integer getAllArticlesSize(@RequestParam(value = "type", required = false) TypeArticles type){
-        int size = type == null ? articlesRepository.findAll().size() : articlesRepository.findByType(type).size();
-        return size;
+    public Long getAllArticlesSize(@RequestParam(value = "type", required = false) TypeArticles type,
+                                      @RequestParam(value = "find", required = false) String find){
+        Page<Articles> articlesPage;
+        if (type != null && find == null){
+            articlesPage = articlesRepository.findByType(type, PageRequest.of(0, 20));
+        } else if(type == null && find != null){
+            articlesPage = articlesRepository.findByTitle(find, PageRequest.of(0, 20));
+        } else if (type != null && find != null) {
+            articlesPage = articlesRepository.findByTypeTitle(type, find, PageRequest.of(0, 20));
+        } else {
+            articlesPage = articlesRepository.findAll(PageRequest.of(0, 20));
+        }
+        return articlesPage.getTotalElements();
     }
 
     @GetMapping("/")
     public ResponseEntity<ArrayList<ArticlesResponse>> getAllArticles(@RequestParam("sort") boolean isAsc,
                                                                       @RequestParam(value = "type", required = false) TypeArticles type,
-                                                                      @RequestParam("current") int current){
+                                                                      @RequestParam("current") int current,
+                                                                      @RequestParam(value = "find", required = false) String find){
         Sort sort;
         if (isAsc) sort = Sort.by("publication").ascending();
         else sort = Sort.by("publication").descending();
         ArrayList<ArticlesResponse> allArticlesResponses = new ArrayList<>();
-        for (Articles a : type == null ? articlesRepository.findAll(PageRequest.of(current, 20, sort)) :
-                articlesRepository.findByType(type, PageRequest.of(current, 20, sort))){
+
+        Page<Articles> articlesPage;
+        if (type != null && find == null){
+            articlesPage = articlesRepository.findByType(type, PageRequest.of(current, 20, sort));
+        } else if(type == null && find != null){
+            articlesPage = articlesRepository.findByTitle(find, PageRequest.of(current, 20, sort));
+        } else if (type != null && find != null) {
+            articlesPage = articlesRepository.findByTypeTitle(type, find, PageRequest.of(current, 20, sort));
+        } else {
+            articlesPage = articlesRepository.findAll(PageRequest.of(current, 20, sort));
+        }
+        for (Articles a : articlesPage){
             allArticlesResponses.add(articlesService.responseOneArticle(a));
         }
         return ResponseEntity.ok(allArticlesResponses);

@@ -1,13 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Menu, Avatar, Button, Dropdown, Select } from 'antd'
-import { GetBooks } from '../../api/FindBooksApiMethods'
+import { SearchOutlined } from '@ant-design/icons';
+import { GetBooks, GetThreeBooks } from '../../api/FindBooksApiMethods'
+import { getBookImage } from '../Urls';
+import { GetThreeArticles } from '../../api/BlogApiMethods';
 
 export const Finder = () => {
     const navigation = useNavigate()
     const { Option, OptGroup  } = Select;
     const [searchText, setSearchText] = useState('');
     const [books, setBooks] = useState([])
+    const [articles, setArticles] = useState([])
     const [params, setParams] = useState({
                 type: 0,
                 genre: 0,
@@ -21,8 +25,10 @@ export const Finder = () => {
             })
 
     const getInfo = async () => {
-        const res = await GetBooks(params);
+        const res = await GetThreeBooks(params);
         setBooks(res)
+        const a = await GetThreeArticles(params.inName);
+        setArticles(a)
     }
 
     useEffect(() => {
@@ -39,36 +45,46 @@ export const Finder = () => {
     );
     
     const handleChange = (value) => {
-        setSearchText(value);
-        navigation(`/${value}`);
-        console.log(value)
+        if (value <= 3)
+            navigation(`/${value}`);
+        else
+            navigation(`/blog/${value}`);
     };
-
-    
     
     return (
         <Select
         showSearch
-        
+        suffixIcon={<SearchOutlined />}
         value={searchText}
         onChange={handleChange}
         style={{ width: "100%" }}
-        onInputKeyDown={(input) => {setParams((prevParams) => ({ ...prevParams, inName: input.target.value }))}}
+        onSearch={(value) => {setParams((prevParams) => ({ ...prevParams, inName: value }))}}
         filterOption={false}
-        dropdownStyle={{ height: 'auto', overflow: 'auto' }}
       >
-        {books.length > 0 &&
-            <OptGroup label={<CustomLabel label="Книги" onButtonClick={() => console.log("Книги")}/>}>
-                {books.map((book) => {
-                    return <Option value = {book.isbn} key={book.isbn} >{book.name} {book.authors.map(author => author.name + " " + author.lastName)}</Option>
+        {books && books.length > 0 &&
+            <OptGroup label={<CustomLabel label="Книги" onButtonClick={() => navigation(`/shop/find/${params.inName}`)}/>}>
+                {books.map((book, index) => {
+                    return <Option value = {book.isbn} key={index}>
+                        <div style={{display: "flex"}}>
+                            <img  src={getBookImage + book.images[0].location} style={{width: "30px", marginRight: 10}}/>
+                            <div>
+                                <p style={{margin: 0}}>{book.name}</p>
+                                <p style={{margin: 0, color: "grey"}}>{book.authors.map(author => `${author.name} ${author.lastName}`).join(', ')}</p>
+                            </div>
+                        </div>
+                    </Option>
                 })}
             </OptGroup>
         }
         
-        <OptGroup label={<CustomLabel label="Статьи" onButtonClick={() => console.log("Статьи")}/>}>
-          <Option value="Option 3" key={100}>Опция 3</Option>
-          <Option value="Option 4" key={110}>Опция 4</Option>
-        </OptGroup>
+        {articles.length > 0 &&
+            <OptGroup label={<CustomLabel label="Статьи" onButtonClick={() => {params.inName !== '' ? navigation(`/blog/find/${params.inName}`) : navigation(`/blog`) }}/>}>
+                {articles.map((article, index) => {
+                    return <Option value = {article.id} key={index + 3}>{article.title}</Option>
+                })}
+            </OptGroup>
+        }
+        
       </Select>
     )
 }
